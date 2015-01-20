@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+  </head>
+
+  <body>
+
+    <div id="app">
+
+      <div id="main" class="row">
+        <div id="main_header" class="blue darken-2 z-depth-9">
+          <div id="url_form" class="input-field">
+            <i class="mdi-image-switch-video prefix"></i>
+            <input id="url" type="text" placeholder="Youtube URL">
+          </div>
+        </div>
+
+        <div id="loops" class="col s5 z-depth-3">
+          <div id="loop_header" class="z-depth-4 blue lighten-2 blue-text text-darken-4">
+            <span class="name"> Saved Loops </span>
+            <span><a id="ctrl-pause" class="waves-effect waves-blue btn-flat"><i class="medium mdi-av-pause"></i></a></span>
+            <span><a id="ctrl-play" class="waves-effect waves-blue btn-flat"><i class="medium mdi-av-play-arrow"></i></a></span>
+            <span><a id="ctrl-add" class="waves-effect waves-blue btn-flat"><i class="medium mdi-content-add"></i></a></span>
+          </div>
+          <ul id="user_loops" class="collection">
+          </ul>
+        </div>
+
+        <div id="video" class="col z-depth-2">
+        </div>
+
+      </div>
+
+    </div>
+
+    <script type="text/template" id="no-vid-tpl">
+      <div id="no_video_shim" class="video_size valign-wrapper amber lighten-4">
+        <div class="valign">
+          <i class="mdi-av-videocam large"></i>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="no-loops-tpl">
+      <li class="collection-item"> No loops added yet </li>
+    </script>
+
+    <script type="text/template" id="loop-tpl">
+      <div class="name col s6">
+        <a class="loop-action disabled btn-floating btn-medium waves-effect waves-light">
+          <i class="mdi-av-queue-music"></i>
+        </a>
+        <span class="loop-name"><%=name%></span>
+      </div>
+      <span class="tooltip"> Click during playback to set start time </span>
+      <div class="start time col s3">
+        <i class="mdi-action-alarm"></i> <span><%=start%></span>
+      </div>
+      <div class="end time col s3">
+        <i class="mdi-action-alarm-off"></i> <span><%=end%></span>
+      </div>
+    </script>
+
+    <script type="text/template" id="loop-form-tpl">
+      <div class="name col s12">
+        <a class="loop-action disabled btn-floating btn-medium waves-effect waves-light"><i class="mdi-av-queue-music"></i></a>
+        <div class="input-field">
+          <input id="name" type="text">
+          <label for="name">Loop name</label>
+        </div>
+      </div>
+    </script>
+
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/underscore-min.js"></script>
+    <script type="text/javascript" src="js/backbone.js"></script>
+    <script type="text/javascript" src="js/marionette.js"></script>
+    <script type="text/javascript" src="js/materialize.js"></script>
+    <script type="text/javascript" src="js/ytl-backbone.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+  </body>
+</html>

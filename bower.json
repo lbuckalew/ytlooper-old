@@ -1,0 +1,16 @@
+{
+  "name": "ytlooper",
+  "version": "0.0.0",
+  "authors": [
+    "Louis Buckalew <lwb0003@auburn.edu>"
+  ],
+  "description": "Youtube video looper",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "backbone": "~1.1.2",
+    "materialize": "~0.95.0",
+    "jquery": "~2.1.3",
+    "grunt": "~0.4.5"
+  }
+}
