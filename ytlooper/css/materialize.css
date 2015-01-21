@@ -7668,7 +7668,7 @@ ul.side-nav.fixed {
 
 #loops .collection {
   margin: 0; }
-#loops ul {
+#loops ul#user_loops {
   height: 350px;
   overflow-y: scroll; }
 
@@ -7738,10 +7738,6 @@ ul.side-nav.fixed {
 #user_loops .ytloop {
   height: 45px;
   padding: 0px; }
-  #user_loops .ytloop a.start, #user_loops .ytloop a.end {
-    line-height: 5em;
-    margin: 0;
-    padding: 0; }
   #user_loops .ytloop .row {
     margin-bottom: 0; }
   #user_loops .ytloop .loop-action {

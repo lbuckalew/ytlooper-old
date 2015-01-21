@@ -76,12 +76,12 @@ $(document).ready(function() {
         asgnStart: function() {
             var time = App.ytloop.getVidTime();
             this.model.set({start:time});
-            this.render();
+            this.$el.find('span#start_value').fadeOut(400, function(){$(this).html(time).fadeIn()});
         },
         asgnEnd: function() {
             var time = App.ytloop.getVidTime();
             this.model.set({end:time});
-            this.render();
+            this.$el.find('span#end_value').fadeOut(400, function(){$(this).html(time).fadeIn()});
         },
         loopit: function() {
             var start = this.model.get('start');
@@ -146,7 +146,7 @@ $(document).ready(function() {
             this.render();
         },
         clearURL: function(e) {
-            e.preventDefault();
+            if(e){e.preventDefault()};
             this.ui.urlInput.val('').focus();
         },
         ppVid: function() {
