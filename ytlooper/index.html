@@ -9,25 +9,24 @@
     <div id="app">
 
       <div id="main" class="row">
-        <div id="main_header" class="blue darken-2 z-depth-9">
+        <div id="main_header" class="z-depth-5 blue darken-2">
           <div id="url_form" class="input-field">
             <i class="mdi-image-switch-video prefix"></i>
             <input id="url" type="text" placeholder="Youtube URL">
           </div>
         </div>
 
-        <div id="loops" class="col s5 z-depth-3">
-          <div id="loop_header" class="z-depth-4 blue lighten-2 blue-text text-darken-4">
+        <div id="loops" class="z-depth-5 col s5">
+          <div id="loop_header" class="z-depth-7 blue lighten-2 blue-text text-darken-4">
             <span class="name"> Saved Loops </span>
-            <span><a id="ctrl-pause" class="waves-effect waves-blue btn-flat"><i class="medium mdi-av-pause"></i></a></span>
-            <span><a id="ctrl-play" class="waves-effect waves-blue btn-flat"><i class="medium mdi-av-play-arrow"></i></a></span>
-            <span><a id="ctrl-add" class="waves-effect waves-blue btn-flat"><i class="medium mdi-content-add"></i></a></span>
+            <span><a id="ctrl-pp" class="waves-effect waves-light btn-flat"><i class="medium mdi-av-pause"></i></a></span>
+            <span><a id="ctrl-add" class="waves-effect waves-light btn-flat"><i class="medium mdi-content-add"></i></a></span>
           </div>
           <ul id="user_loops" class="collection">
           </ul>
         </div>
 
-        <div id="video" class="col z-depth-2">
+        <div id="video" class="col z-depth-5">
         </div>
 
       </div>
@@ -53,12 +52,13 @@
         </a>
         <span class="loop-name"><%=name%></span>
       </div>
-      <span class="tooltip"> Click during playback to set start time </span>
-      <div class="start time col s3">
-        <i class="mdi-action-alarm"></i> <span><%=start%></span>
+      <div class="valign start time col s3 row">
+        <div class="col s12"> <span hidden class="loop-time-tag"> Set Start </span> </div>
+        <div class="col s12"> <i class="mdi-action-alarm"></i> <span><%=start%></span> </div>
       </div>
-      <div class="end time col s3">
-        <i class="mdi-action-alarm-off"></i> <span><%=end%></span>
+      <div class="valign end time col s3">
+        <div class="col s12"> <span hidden class="loop-time-tag"> Set End </span> </div>
+        <div class="col s12"> <i class="mdi-action-alarm-off"></i> <span><%=end%></span> </div>
       </div>
     </script>
 

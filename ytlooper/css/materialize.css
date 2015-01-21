@@ -7657,15 +7657,14 @@ ul.side-nav.fixed {
   .picker--time .picker__box {
     margin-bottom: 5em; } }
 #main {
-  height: 390px;
+  width: calc((100% / 12 * 5) + 640px);
   margin-left: 5%;
   margin-right: 5%;
   margin-top: 100px; }
 
 #main_header {
   width: calc((100% / 12 * 5) + 640px);
-  padding-left: 1%;
-  padding-right: 5%; }
+  padding-left: 1%; }
 
 #loops .collection {
   margin: 0; }
@@ -7723,20 +7722,26 @@ ul.side-nav.fixed {
 #user_loops .ytloopform {
   height: 45px;
   padding: 0px; }
+  #user_loops .ytloopform .col {
+    top: -0.6em; }
   #user_loops .ytloopform .col.time i {
     font-size: 1em; }
-  #user_loops .ytloopform .col.name .loop-action {
-    margin-top: 0.25em; }
-  #user_loops .ytloopform .col.name .input-field {
-    display: inline-block;
-    top: -1.3em;
-    margin-top: 0; }
+  #user_loops .ytloopform .col.name {
+    height: inherit; }
+    #user_loops .ytloopform .col.name .loop-action {
+      margin-top: 0.25em; }
+    #user_loops .ytloopform .col.name .input-field {
+      display: inline-block;
+      top: -1.3em;
+      margin-top: 0; }
 
 #user_loops .ytloop {
   height: 45px;
   padding: 0px; }
-  #user_loops .ytloop :hover i {
-    color: red; }
+  #user_loops .ytloop a.start, #user_loops .ytloop a.end {
+    line-height: 5em;
+    margin: 0;
+    padding: 0; }
   #user_loops .ytloop .row {
     margin-bottom: 0; }
   #user_loops .ytloop .loop-action {
@@ -7751,10 +7756,11 @@ ul.side-nav.fixed {
   #user_loops .ytloop .col.name {
     padding-top: 0.25em; }
   #user_loops .ytloop .col.time {
-    padding-top: 0.6em;
     padding-left: 0;
     padding-right: 0; }
     #user_loops .ytloop .col.time span {
       text-align: right; }
+  #user_loops .ytloop .loop-time-tag {
+    font-size: 0.8em; }
 
 /*# sourceMappingURL=materialize.css.map */
