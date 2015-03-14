@@ -15,9 +15,15 @@ A test of the application is displayed at https://lbuckalew.github.io/ytlooper/
 
 ## Third party packages
 Bower           https://bower.io/
+
 Sass            http://sass-lang.com/
+
 MaterializeCSS  http://materializecss.com/
+
 jQuery          http://jquery.com/
+
 Underscore      http://underscorejs.org/
+
 BackBone        http://backbonejs.org/
+
 Marionette      http://marionettejs.com/
