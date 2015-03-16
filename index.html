@@ -1,8 +1,8 @@
 <html>
   <head>
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="ytlooper/css/materialize.css"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="ytlooper/css/ytlooper.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="static/css/materialize.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="static/css/ytlooper.css"  media="screen,projection"/>
   </head>
 
   <body>
@@ -10,15 +10,16 @@
     <div id="app">
 
       <div id="main" class="row">
-        <div id="main_header" class="z-depth-5 blue darken-2">
+        <div id="main_header" class="blue darken-2">
           <div id="url_form" class="input-field">
             <i class="mdi-image-switch-video prefix"></i>
             <input id="url" type="text" placeholder="Youtube URL">
           </div>
+          <div hidden class="video_name">Video name</div>
         </div>
 
-        <div id="loops" class="z-depth-5 col s5">
-          <div id="loop_header" class="z-depth-7 blue lighten-2 blue-text text-darken-4">
+        <div id="loops" class="col s5">
+          <div id="loop_header" class=" blue lighten-2 blue-text text-darken-4">
             <span class="name"> Saved Loops </span>
             <span><a id="ctrl-pp" class="waves-effect waves-light btn-flat"><i class="medium mdi-av-pause"></i></a></span>
             <span><a id="ctrl-add" class="waves-effect waves-light btn-flat"><i class="medium mdi-content-add"></i></a></span>
@@ -27,7 +28,11 @@
           </ul>
         </div>
 
-        <div id="video" class="col z-depth-5">
+        <div id="video" class="col">
+        </div>
+
+        <div id="main_footer" class="blue darken-2">
+        Footer
         </div>
 
       </div>
@@ -54,11 +59,9 @@
         <span class="loop-name"><%=name%></span>
       </div>
       <div class="valign start time col s3 row">
-        <div class="col s12"> <span hidden class="loop-time-tag"> Set Start </span> </div>
         <div class="col s12"> <i class="mdi-action-alarm"></i> <span id="start_value"><%=start%></span> </div>
       </div>
       <div class="valign end time col s3">
-        <div class="col s12"> <span hidden class="loop-time-tag"> Set End </span> </div>
         <div class="col s12"> <i class="mdi-action-alarm-off"></i> <span id="end_value"><%=end%></span> </div>
       </div>
     </script>
@@ -75,12 +78,13 @@
 
 
     <!--Import jQuery before materialize.js-->
-    <script type="text/javascript" src="ytlooper/js/jquery.min.js"></script>
-    <script type="text/javascript" src="ytlooper/js/underscore.js"></script>
-    <script type="text/javascript" src="ytlooper/js/backbone.js"></script>
-    <script type="text/javascript" src="ytlooper/js/marionette.js"></script>
-    <script type="text/javascript" src="ytlooper/js/materialize.js"></script>
-    <script type="text/javascript" src="ytlooper/js/ytl-backbone.js"></script>
+    <script type="text/javascript" src="static/js/jquery.js"></script>
+    <script type="text/javascript" src="static/js/underscore.js"></script>
+    <script type="text/javascript" src="static/js/backbone.js"></script>
+    <script type="text/javascript" src="static/js/backbone.marionette.js"></script>
+    <script type="text/javascript" src="static/js/materialize.js"></script>
+    <script type="text/javascript" src="static/js/ytl-backbone.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://apis.google.com/js/client.js?onload=dataAPIinit"></script>
   </body>
 </html>

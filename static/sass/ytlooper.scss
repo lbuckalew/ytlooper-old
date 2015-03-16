@@ -23,9 +23,20 @@ $video-width: 640px;
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 100px;
+
+    .video_name {
+        font-size: 2em;
+        color: white;
+    }
 }
 
 #main_header {
+    width: calc((100% / 12 * 5) + 640px);
+    padding-left: 2%;
+    height: 3.6em;
+}
+
+#main_footer {
     width: calc((100% / 12 * 5) + 640px);
     padding-left: 1%;
 }
@@ -38,6 +49,7 @@ $video-width: 640px;
     ul#user_loops {
         height: 350px;
         overflow-y: scroll;
+        background-color: white;
     }
 }
 
@@ -78,7 +90,7 @@ $video-width: 640px;
 
     input {
         border-bottom-color: white;
-        width: 60%;
+        width: 40%;
     }
     ::-webkit-input-placeholder { /* WebKit browsers */
         color:    white;
@@ -99,6 +111,11 @@ $video-width: 640px;
 #no_video_shim {
     height: $video-height;
     width: $video-width;
+
+    .valign {
+        margin-right: auto;
+        margin-left: auto;
+    }
 }
 
 #user_loops .ytloopform {
@@ -120,7 +137,7 @@ $video-width: 640px;
         }
         .input-field {
             display: inline-block;
-            top: -1.3em;
+            top: -0.5em;
             margin-top: 0;
         }
     }
@@ -137,10 +154,19 @@ $video-width: 640px;
     .loop-action {
         float: left;
         height: 35px;
+        @extend .yellow, .lighten-3;
+
+        .disabled {
+            background-color: grey;
+        }
+    }
+
+    .loop-action.disabled {
+        background-color: grey;
     }
 
     .loop-name {
-        padding-left: 2%;
+        padding-left: 4%;
         position: relative;
         bottom: -0.5em;
     }
