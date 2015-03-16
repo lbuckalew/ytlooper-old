@@ -1,8 +1,3 @@
-dataAPIinit = function() {
-    gapi.client.setApiKey('AIzaSyATrsvgpXDLv5S_HohztMyylIUnpLWpkqY');
-    gapi.client.load('youtube', 'v3');
-};
-
 $(document).ready(function() {
 
     App = new Backbone.Marionette.Application();
@@ -13,6 +8,14 @@ $(document).ready(function() {
             YTid : null,
             start: 0,
             end: 0
+        }
+    });
+
+    var Video = Backbone.Model.extend({
+        url: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyATrsvgpXDLv5S_HohztMyylIUnpLWpkqY',
+        defaults: {
+            name: '',
+            YTid : null
         }
     });
 
@@ -141,7 +144,7 @@ $(document).ready(function() {
             videoName: '.video_name'
         },
         events: {
-            'input @ui.urlInput' : 'inputURL',
+            'input @ui.urlInput' : 'loadVideo',
             'click @ui.urlInput' : 'clearURL',
             'click @ui.ppButton' : 'ppVid',
             'click @ui.newButton' : 'newLoop',
@@ -152,13 +155,14 @@ $(document).ready(function() {
         },
         initialize: function() {
             this.render();
-
         },
         clearURL: function(e) {
+            // clears the value fo the url input
             if(e){e.preventDefault()};
             this.ui.urlInput.val('').focus();
         },
         ppVid: function() {
+            // pause or play the video (toggle)
             if (App.player) {
                 var state = App.player.getPlayerState();
                 if (state==1) {
@@ -169,6 +173,8 @@ $(document).ready(function() {
             };
         },
         processKey: function(e) {
+            // route key commands
+            // test if spacebar to toggle play / pause
             if ($(':focus').length == 0) {
                 if (e.keyCode == 32) {
                     e.preventDefault();
@@ -190,30 +196,43 @@ $(document).ready(function() {
                 urlForm.removeClass('tempHover').hide();
             }
         },
-        inputURL: function(e) {
+        loadVideo: function(e) {
+            var that = this;
+            // take the url from the form and load all aspects of video
+
             var input = this.ui.urlInput;
             var re = /(?:youtube).+(?:v=)([\w]+)/g;
             var ytid = re.exec(input.val());
 
             if (ytid) {
+                ytid = ytid[1];
+                // get from data api and save video info
+                App.video = new Video();
+                App.video.set({YTid:ytid});
+                App.video.url += '&id='+ytid;
+                App.video.fetch({
+                    success: function(model, response, options) {
+                        that.appendVideoName(response.items[0].snippet.title);
+                    }
+                });
+
+
+                // get rid of current video 
                 $('iframe').detach();
                 if (App.player) {delete App.player;};
-                this.insertIframe(ytid[1]);
+
+                //add new video
+                this.insertIframe(ytid);
                 input.blur();
                 this.ui.urlInput.closest('#url_form').hide();
-                this.appendVideoName(ytid);
+                this.ui.videoName.show();
             } else {
                 alert('Not a proper youtube url');
             }
 
         },
-        appendVideoName: function(id) {
-            var that = this;
-            var request = gapi.client.youtube.videos.list({
-                'part' : 'snippet',
-                'id' : id
-            });
-            request.then(function(response){that.ui.videoName.show();});
+        appendVideoName: function(title) {
+            this.ui.videoName.html(title);
         },
         insertIframe: function(ytid) {
             if ( YT ) {

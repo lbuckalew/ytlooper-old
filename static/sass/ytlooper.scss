@@ -25,7 +25,7 @@ $video-width: 640px;
     margin-top: 100px;
 
     .video_name {
-        font-size: 2em;
+        font-size: 1.3em;
         color: white;
     }
 }
@@ -155,14 +155,10 @@ $video-width: 640px;
         float: left;
         height: 35px;
         @extend .yellow, .lighten-3;
-
-        .disabled {
-            background-color: grey;
-        }
     }
 
     .loop-action.disabled {
-        background-color: grey;
+        @extend .grey, .lighten-2;
     }
 
     .loop-name {
