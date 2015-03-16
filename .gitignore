@@ -1,1 +1,4 @@
-bower_components
+bower_components/
+.sass-cache/
+.env/
+*.pyc
