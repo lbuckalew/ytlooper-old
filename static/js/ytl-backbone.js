@@ -18,12 +18,7 @@ $(document).ready(function() {
         url: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyATrsvgpXDLv5S_HohztMyylIUnpLWpkqY',
     });
 
-    var Video = Backbone.Model.extend({
-        defaults: {
-            name: '',
-            YTid : null
-        }
-    });
+    var Video = Backbone.Model;
     var VideoView = Backbone.Marionette.ItemView.extend({
         template: '#user-video-list-item-tpl',
         tagName: 'li',
@@ -174,7 +169,6 @@ $(document).ready(function() {
                     var loop = new Loop({name:name});
                     App.ytloop.addLoop(loop);
                     this.destroy();
-                    App.ytloop.saveLoops();
                 }
             };
         }
@@ -266,17 +260,17 @@ $(document).ready(function() {
         inputURL: function(e) {
             // take the url from the form and load all aspects of video
             var input = this.ui.urlInput;
-            var re = /(?:youtube).+(?:v=)([\w]+)/g;
+            var re = /(?:youtube).+(?:v=)(.[^?]+)/g;
             var ytid = re.exec(input.val());
 
             if (ytid) {
                 ytid = ytid[1];
                 this.loadVideo(ytid);
+
+                if(App.video.has('name')){App.ytloop.saveVideo()};
             } else {
                 toast('Not a proper youtube url', 5000);
             }
-
-            App.ytloop.saveVideo();
         },
         loadVideo: function(ytid) {
             var that = this;
@@ -288,10 +282,14 @@ $(document).ready(function() {
             var videoData = new VideoData();
             videoData.url += '&id='+ytid;
             videoData.fetch({
+                async: false,
                 success: function(model, response, options) {
                     var n = response.items[0].snippet.title;
                     that.appendVideoName(n);
                     App.video.set({name:n});
+                },
+                error: function(model, xhr, options) {
+                    toast('There is a problem with this video, try another.', 5000);
                 }
             });
 
@@ -349,6 +347,7 @@ $(document).ready(function() {
             this.ui.videoName.html("Loopin' " + title);
         },
         insertIframe: function(ytid) {
+            console.log(ytid)
             if ( YT ) {
                 this.video.reset();
                 $(this.video.el).append('<div id="player"></div>');
@@ -401,6 +400,7 @@ $(document).ready(function() {
             if (App.video) {
                 loop.set({YTid:App.video.get('YTid')});
                 App.loops.add(loop);
+                this.saveLoops();
                 var msg = 'Loop added to ' + App.video.get('name');
                 toast(msg, 5000);
             } else {
