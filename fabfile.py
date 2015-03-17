@@ -62,10 +62,12 @@ def sass(full=False):
         local('sass static/sass/ytlooper.scss static/css/ytlooper.css')
 
 @task
-def run():
-    check_env()
-    bower()
-    sass()
+def run(fast=False):
+    if fast==False:
+        check_env()
+        bower()
+        sass()
+
     with lcd(local_root):
         local('python -m SimpleHTTPServer 8000')
 

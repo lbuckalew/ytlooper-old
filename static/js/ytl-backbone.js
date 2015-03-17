@@ -10,18 +10,36 @@ $(document).ready(function() {
             end: 0
         }
     });
+    var Loops = Backbone.Collection.extend({
+        model: Loop
+    });
+
+    var VideoData = Backbone.Model.extend({
+        url: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyATrsvgpXDLv5S_HohztMyylIUnpLWpkqY',
+    });
 
     var Video = Backbone.Model.extend({
-        url: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyATrsvgpXDLv5S_HohztMyylIUnpLWpkqY',
         defaults: {
             name: '',
             YTid : null
         }
     });
-
-    var Loops = Backbone.Collection.extend({
-        model: Loop
+    var VideoView = Backbone.Marionette.ItemView.extend({
+        template: '#user-video-list-item-tpl',
+        tagName: 'li',
+        className: 'user_video_list_item'
     });
+    var Videos = Backbone.Collection.extend({
+        model: Video
+    })
+    var VideosListView = Backbone.Marionette.CollectionView.extend({
+        childView: VideoView,
+        emptyView: EmptyVideoListView,
+        onShow: function() {
+            $('.dropdown-button').dropdown();
+        }
+    })
+    var EmptyVideoListView = Backbone.Marionette.ItemView.extend({});
 
     var EmptyLoopView = Backbone.Marionette.ItemView.extend({
         template: '#no-loops-tpl',
@@ -32,7 +50,7 @@ $(document).ready(function() {
     var LoopView = Backbone.Marionette.ItemView.extend({
         template: '#loop-tpl',
         tagName: 'li',
-        className: 'ytloop collection-item row valign-wrapper',
+        className: 'ytloop collection-item row',
         events: {
             'mouseenter' : 'mouseOn',
             'mouseleave' : 'mouseOff',
@@ -40,43 +58,59 @@ $(document).ready(function() {
             'click .end' : 'asgnEnd',
             'click .loop-action' : 'loopit'
         },
+        onShow: function() {
+            $('.tooltipped').tooltip({delay: 50});
+            this.$el.find('.progress').hide() // hide by default
+        },
         mouseOn: function() {
             this.$el.toggleClass('z-depth-8');
-            this.$el.find('.loop-action').removeClass('disabled').find('i')
-            .animate({opacity: 0}, {
-                duration: 200,
-                step: function(now, fx) {
-                    var a = (1-now)*360;
-                    $(this).css('-webkit-transform','rotate('+a+'deg)');
-                },
-                done: function() {
-                    $(this).addClass('mdi-navigation-refresh');
-            }}).animate({opacity: 1}, {
-                duration: 200,
-                step: function(now, fx) {
-                    var a = (now)*360;
-                    $(this).css('-webkit-transform','rotate('+a+'deg)');
-            }});
+
+            if (!this.$el.hasClass('active-loop')) {
+                //this.$el.find('.loop-action i').stop();
+                this.$el.find('.loop-action').removeClass('disabled').find('i')
+                .animate({opacity: 0}, {
+                    queue: false,
+                    duration: 200,
+                    step: function(now, fx) {
+                        var a = (1-now)*360;
+                        $(this).css('-webkit-transform','rotate('+a+'deg)');
+                    },
+                    done: function() {
+                        $(this).addClass('mdi-navigation-refresh');
+                }}).animate({opacity: 1}, {
+                    queue: false,
+                    duration: 200,
+                    step: function(now, fx) {
+                        var a = (now)*360;
+                        $(this).css('-webkit-transform','rotate('+a+'deg)');
+                }});
+            };
             this.$el.find('.start.time i').addClass('green-text');
             this.$el.find('.end.time i').addClass('red-text');
         },
         mouseOff: function() {
             this.$el.toggleClass('z-depth-8');
-            this.$el.find('.loop-action').addClass('disabled').find('i')
-            .animate({opacity: 0}, {
-                duration: 200,
-                step: function(now, fx) {
-                    var a = (1-now)*360;
-                    $(this).css('-webkit-transform','rotate('+a+'deg)');
-                },
-                done: function() {
-                    $(this).removeClass('mdi-navigation-refresh');
-            }}).animate({opacity: 1}, {
-                duration: 200,
-                step: function(now, fx) {
-                    var a = (now)*360;
-                    $(this).css('-webkit-transform','rotate('+a+'deg)');
-            }});
+
+            if (!this.$el.hasClass('active-loop')) {
+                //this.$el.find('.loop-action i').stop();
+                this.$el.find('.loop-action').addClass('disabled').find('i')
+                .animate({opacity: 0}, {
+                    queue: false,
+                    duration: 200,
+                    step: function(now, fx) {
+                        var a = (1-now)*360;
+                        $(this).css('-webkit-transform','rotate('+a+'deg)');
+                    },
+                    done: function() {
+                        $(this).removeClass('mdi-navigation-refresh');
+                }}).animate({opacity: 1}, {
+                    queue: false,
+                    duration: 200,
+                    step: function(now, fx) {
+                        var a = (now)*360;
+                        $(this).css('-webkit-transform','rotate('+a+'deg)');
+                }});
+            };
             this.$el.find('.start.time i').removeClass('green-text');
             this.$el.find('.end.time i').removeClass('red-text');
         },
@@ -84,11 +118,13 @@ $(document).ready(function() {
             var time = App.ytloop.getVidTime();
             this.model.set({start:time});
             this.$el.find('span#start_value').fadeOut(400, function(){$(this).html(time).fadeIn()});
+            App.ytloop.saveLoops();
         },
         asgnEnd: function() {
             var time = App.ytloop.getVidTime();
             this.model.set({end:time});
             this.$el.find('span#end_value').fadeOut(400, function(){$(this).html(time).fadeIn()});
+            App.ytloop.saveLoops();
         },
         loopit: function() {
             var start = this.model.get('start');
@@ -96,9 +132,25 @@ $(document).ready(function() {
 
             if (end-start > 0.5) {
                 App.ytloop.loopVid(start, end);
+                App.currentLoop = this;
+
+                this.$el.siblings().removeClass('active-loop').find('a').addClass('disabled');
+                this.$el.addClass('active-loop');
+                this.$el.find('.progress').show()
+
+                // monitor progress bar and save variable for later cancel
+                App.progressInterval = setInterval(this.updateProgressBar, 100, this);
             } else {
-                alert('End time comes before Start time.');
+                toast('End time comes before Start time.', 5000);
             };
+        },
+        updateProgressBar: function(context) {
+            var start = context.model.get('start');
+            var end = context.model.get('end');
+            var range = end-start;
+            var current = App.ytloop.getVidTime()
+            var complete = Math.round(((current-start)/range)*100) + '%';
+            context.$el.find('.progress .determinate').css('width',complete);
         }
     });
 
@@ -112,10 +164,18 @@ $(document).ready(function() {
         newLoop: function(e) {
             if (e.keyCode === 13) {
                 e.preventDefault();
+
                 var name = this.$el.find('input#name').val();
-                var loop = new Loop({name:name});
-                App.ytloop.addLoop(loop);
-                this.destroy();
+                var existing = App.loops.findWhere({name:name});
+
+                if (existing) {
+                    toast('There is already a loop with that name.', 5000);
+                } else {
+                    var loop = new Loop({name:name});
+                    App.ytloop.addLoop(loop);
+                    this.destroy();
+                    App.ytloop.saveLoops();
+                }
             };
         }
     });
@@ -135,7 +195,8 @@ $(document).ready(function() {
         regions: {
             loops: '#main #loops',
             video: '#main #video',
-            loopList: '#user_loops'
+            loopList: '#user_loops',
+            userVideoList: '#user_video_list'
         },
         ui: {
             urlInput: '#url_form input#url',
@@ -144,7 +205,7 @@ $(document).ready(function() {
             videoName: '.video_name'
         },
         events: {
-            'input @ui.urlInput' : 'loadVideo',
+            'input @ui.urlInput' : 'inputURL',
             'click @ui.urlInput' : 'clearURL',
             'click @ui.ppButton' : 'ppVid',
             'click @ui.newButton' : 'newLoop',
@@ -171,6 +232,12 @@ $(document).ready(function() {
                     this.playVid();
                 };
             };
+            clearInterval(App.progressInterval); // clear timing of active progress bar
+
+            // unset any active loop
+            App.ytloop.loopList.$el.find('.ytloop').removeClass('active-loop')
+            .find('a').addClass('disabled').find('i').removeClass('mdi-navigation-refresh');
+            this.$el.find('.progress').hide() // hide progress bar
         },
         processKey: function(e) {
             // route key commands
@@ -196,43 +263,90 @@ $(document).ready(function() {
                 urlForm.removeClass('tempHover').hide();
             }
         },
-        loadVideo: function(e) {
-            var that = this;
+        inputURL: function(e) {
             // take the url from the form and load all aspects of video
-
             var input = this.ui.urlInput;
             var re = /(?:youtube).+(?:v=)([\w]+)/g;
             var ytid = re.exec(input.val());
 
             if (ytid) {
                 ytid = ytid[1];
-                // get from data api and save video info
-                App.video = new Video();
-                App.video.set({YTid:ytid});
-                App.video.url += '&id='+ytid;
-                App.video.fetch({
-                    success: function(model, response, options) {
-                        that.appendVideoName(response.items[0].snippet.title);
-                    }
-                });
-
-
-                // get rid of current video 
-                $('iframe').detach();
-                if (App.player) {delete App.player;};
-
-                //add new video
-                this.insertIframe(ytid);
-                input.blur();
-                this.ui.urlInput.closest('#url_form').hide();
-                this.ui.videoName.show();
+                this.loadVideo(ytid);
             } else {
-                alert('Not a proper youtube url');
+                toast('Not a proper youtube url', 5000);
             }
 
+            App.ytloop.saveVideo();
+        },
+        loadVideo: function(ytid) {
+            var that = this;
+
+            App.video = new Video();
+            App.video.set({YTid:ytid});
+
+            // get from data api and save video info
+            var videoData = new VideoData();
+            videoData.url += '&id='+ytid;
+            videoData.fetch({
+                success: function(model, response, options) {
+                    var n = response.items[0].snippet.title;
+                    that.appendVideoName(n);
+                    App.video.set({name:n});
+                }
+            });
+
+            var input = this.ui.urlInput;
+            input.blur();
+            this.ui.urlInput.closest('#url_form').hide();
+            this.ui.videoName.show();
+
+            // get rid of current video 
+            $('iframe').detach();
+            if (App.player) {delete App.player;};
+
+            //add new video
+            this.insertIframe(ytid);
+            toast('Video loaded. Press [spacebar] or the play button to begin.', 10000);
+            toast('You can also drag the YouTube bar while paused for precision.', 10000);
+
+            //show loops
+            this.showLoops();
+
+        },
+        saveVideo: function() {
+            var existing = App.userVideos.findWhere({YTid:App.video.get('YTid')});
+            if (existing) {
+                var msg = App.video.get('name') + ' is already in your video collection.';
+                toast(msg, 5000);
+            } else {
+                App.userVideos.add(App.video);
+
+                var c = JSON.stringify(App.userVideos.toJSON());
+                document.cookie = "userVideos=" + c;
+
+
+                var msg = App.video.get('name') + ' added to your video collection.';
+                toast(msg, 5000);
+            };
+        },
+        showLoops: function() {
+            // show all loops related to current video
+            var loops = App.userLoops.where({YTid:App.video.get('YTid')});
+            App.loops.reset(loops);
+        },
+        saveLoops: function() {
+            // saves all loops in userLoops
+            var YTid = App.video.get('YTid');
+            var oldLoops = App.userLoops.filter(function(model){return !(model.get('YTid')==YTid)});
+            var newLoops = App.ytloop.loopList.currentView.collection.models;
+            _.each(newLoops, function(loop) {
+                oldLoops.push(loop);
+            });
+            document.cookie = "userLoops=" + JSON.stringify(oldLoops);
+            toast('New loops were saved', 5000);
         },
         appendVideoName: function(title) {
-            this.ui.videoName.html(title);
+            this.ui.videoName.html("Loopin' " + title);
         },
         insertIframe: function(ytid) {
             if ( YT ) {
@@ -284,12 +398,14 @@ $(document).ready(function() {
             App.ytloop.loopList.$el.prepend(content).find('input').focus();
         },
         addLoop: function(loop) {
-            if (this.ui.urlInput.val()) {
-                loop.set({YTid:this.ui.urlInput.val()});
+            if (App.video) {
+                loop.set({YTid:App.video.get('YTid')});
                 App.loops.add(loop);
+                var msg = 'Loop added to ' + App.video.get('name');
+                toast(msg, 5000);
             } else {
                 this.clearURL();
-                alert('Need to enter a YouTube URL');
+                toast('Need to enter a YouTube URL', 5000);
             }
         },
         clearTimeout: function() {
@@ -297,12 +413,10 @@ $(document).ready(function() {
         }
     });
 
-    onPlayerReady = function() {
-        App.player.playVideo();
-    };
     onPlayerStateChange = function() {
         var state = App.player.getPlayerState();
         App.ytloop.ui.ppButton.find('i').clearQueue();
+
         if (state == 1) {
             App.ytloop.ui.ppButton.find('i')
             .animate({opacity:0}, {
@@ -311,7 +425,7 @@ $(document).ready(function() {
                     $(this).css('-webkit-transform','rotate('+a+'deg)');
                 },
                 done: function() {
-                    $(this).removeClass('mdi-av-play-arrow');
+                    $(this).removeClass('mdi-av-play-arrow').addClass('mdi-av-pause');
                 }
             }).animate({opacity:1}, {
                 step: function(now, fx) {
@@ -330,7 +444,7 @@ $(document).ready(function() {
                     $(this).css('-webkit-transform','rotate('+a+'deg)');
                 },
                 done: function() {
-                    $(this).addClass('mdi-av-play-arrow');
+                    $(this).removeClass('mdi-av-pause').addClass('mdi-av-play-arrow');
                 }
             }).animate({opacity:1}, {
                 step: function(now, fx) {
@@ -340,13 +454,59 @@ $(document).ready(function() {
             });
         };
     };
+    function getCookie(name) {
+        var re = new RegExp(name + "=([^;]+)");
+        var value = re.exec(document.cookie);
+        return (value != null) ? unescape(value[1]) : null;
+    };
+
+    var AppRouter = Backbone.Router.extend({
+
+        routes: {
+            'loop/:ytid' : 'loop'
+        },
+        loop: function(ytid) {
+            var that = this;
+
+            if (!YT.loaded) {
+                App.loadErrors++;
+
+                if (App.loadErrors<3) {
+                    toast('Attempting to load video.', 3000);
+                    setTimeout(this.loop, 3500, ytid);
+                } else if (App.loadErrors<5) {
+                    toast('Having trouble loading video...', 3000);
+                    setTimeout(this.loop, 3500, ytid);
+                } else if (App.loadErrors==5) {
+                    toast('Cannot load, try another video :(', 3000);
+                }
+
+            } else {
+                App.loadErrors = 0; //re-init
+                App.ytloop.loadVideo(ytid);
+            }
+        }
+    });
 
     App.on("start", function(options){
+
+        App.loadErrors = 0;
         App.ytloop = new AppView();
         App.ytloop.video.show(new EmptyVideoView());
+
         App.player = null;
+
         App.loops = new Loops();
         App.ytloop.loopList.show(new LoopListView({collection:App.loops}));
+
+        var vidCookie = JSON.parse(getCookie('userVideos'));
+        App.userVideos = new Videos(vidCookie);
+        App.ytloop.userVideoList.show(new VideosListView({collection:App.userVideos}));
+
+        var loopCookie = JSON.parse(getCookie('userLoops'));
+        App.userLoops = new Loops(loopCookie);
+
+        new AppRouter();
         if (Backbone.history){Backbone.history.start();};
     });
 

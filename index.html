@@ -9,39 +9,58 @@
 
     <div id="app">
 
-      <div id="main" class="row">
-        <div id="main_header" class="blue darken-2">
+      <div id="main">
+        <div id="main_header" class="row row-section blue darken-2 z-depth-4">
           <div id="url_form" class="input-field">
-            <i class="mdi-image-switch-video prefix"></i>
+            <i class="mdi-image-switch-video small prefix"></i>
             <input id="url" type="text" placeholder="Youtube URL">
           </div>
           <div hidden class="video_name">Video name not found...</div>
         </div>
 
-        <div id="loops" class="col s5">
-          <div id="loop_header" class=" blue lighten-2 blue-text text-darken-4">
-            <span class="name"> Saved Loops </span>
-            <span><a id="ctrl-pp" class="waves-effect waves-light btn-flat"><i class="medium mdi-av-pause"></i></a></span>
-            <span><a id="ctrl-add" class="waves-effect waves-light btn-flat"><i class="medium mdi-content-add"></i></a></span>
+        <div class="row row-section  z-depth-4">
+          <div id="loops" class="col">
+            <div id="loop_header" class=" blue lighten-2 blue-text text-darken-4">
+                <!-- Dropdown Trigger -->
+                <a class='dropdown-button btn s5' data-activates='dropdown1'>Browse Videos</a>
+
+                <!-- Dropdown Structure -->
+                <ul id='dropdown1' class='dropdown-content'>
+                  <li><a class="disabled">Search for video</a></li>
+                  <li class="divider">test</li>
+                  <div id="user_video_list"></div>
+                </ul>
+              <span><a id="ctrl-pp" class="waves-effect waves-light btn-flat ">
+                <i class="small mdi-av-play-arrow"></i></a></span>
+              <span><a id="ctrl-add" class="waves-effect waves-light btn-flat tooltipped" data-position="left"  
+                data-tooltip="Add a loop to video"><i class="small mdi-content-add"></i></a></span>
+            </div>
+            <ul id="user_loops" class="collection">
+            </ul>
           </div>
-          <ul id="user_loops" class="collection">
-          </ul>
+
+          <div id="video" class="col">
+          </div>
         </div>
 
-        <div id="video" class="col">
-        </div>
-
-        <div id="main_footer" class="blue darken-2">
-        Footer
+        <div id="main_footer" class="row row-section blue darken-2 z-depth-4">
+          <h5> Instructions </h5>
+          When you enter a video or create/edit a loop it is saved as a cookie until
+          you close the window.
         </div>
 
       </div>
 
     </div>
 
+    <script type="text/template" id="user-video-list-item-tpl">
+      <a href=<% print('/#loop/'+YTid) %> ><%= name %></a>
+    </script>
+
     <script type="text/template" id="no-vid-tpl">
       <div id="no_video_shim" class="video_size valign-wrapper amber lighten-4">
         <div class="valign">
+          <h4> Paste a YouTube URL above to get started. </h4>
           <i class="mdi-av-videocam large"></i>
         </div>
       </div>
@@ -58,17 +77,31 @@
         </a>
         <span class="loop-name"><%=name%></span>
       </div>
-      <div class="valign start time col s3 row">
-        <div class="col s12"> <i class="mdi-action-alarm"></i> <span id="start_value"><%=start%></span> </div>
+      <div class="start time col s3">
+          <div class="col s12">
+            <div class="time_wrapper tooltipped" data-position="left"  
+              data-tooltip="Click during playback to set start">
+              <i class="mdi-action-alarm"></i> <span id="start_value"><%=start%>s</span> 
+            </div>
+          </div>
       </div>
-      <div class="valign end time col s3">
-        <div class="col s12"> <i class="mdi-action-alarm-off"></i> <span id="end_value"><%=end%></span> </div>
+      <div class="end time col s3">
+          <div class="col s12">
+            <div class="time_wrapper tooltipped" data-position="left" 
+              data-tooltip="Click during playback to set end">
+              <i class="mdi-action-alarm-off"></i> <span id="end_value"><%=end%>s</span> 
+            </div>
+          </div>
+      </div>
+      <div class="progress">
+          <div class="determinate"></div>
       </div>
     </script>
 
     <script type="text/template" id="loop-form-tpl">
       <div class="name col s12">
-        <a class="loop-action disabled btn-floating btn-medium waves-effect waves-light"><i class="mdi-av-queue-music"></i></a>
+        <a class="loop-action disabled btn-floating btn-medium waves-effect waves-light">
+          <i class="mdi-av-queue-music"></i></a>
         <div class="input-field">
           <input id="name" type="text">
           <label for="name">Loop name</label>
